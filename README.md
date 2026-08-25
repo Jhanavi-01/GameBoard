@@ -5,24 +5,57 @@ a Flask + SQLite backend where every board belongs to the person who created it.
 
 ## Run it
 
-    npm install
-    pip3 install -r backend/requirements.txt
+**You need:** [Node 18+](https://nodejs.org) and [Python 3.8+](https://python.org).
+Check with `node -v` and `python3 --version`.
 
-    npm run dev        # API on :5055, app on :5173
+    git clone https://github.com/Jhanavi-01/GameBoard.git
+    cd GameBoard
 
-Open http://localhost:5173 and sign in.
+    npm install                                   # frontend
+    pip3 install -r backend/requirements.txt      # backend (Flask)
 
-### One port (phone + laptop on the same wifi)
+    npm run serve
 
-    npm run serve      # builds the app and serves everything from :5055
+That builds the app and serves everything — frontend and API — from one port.
+Open **http://localhost:5055** and sign in with any name.
 
-Then open `http://<your-computer-ip>:5055` on the other device.
+### While developing
 
-### Ports, and why you should not have to care
+    npm run dev        # API on :5055, app on :5173, both reload on save
 
-GameBoard listens on **5055**. Port 8080 is deliberately avoided: a Spring Boot
-app already uses it on this machine, and a dev server left proxying `/api`
-there returns a stranger's 404 that looks like a GameBoard bug.
+Open http://localhost:5173.
+
+### Phone and laptop together
+
+`npm run serve`, then open `http://<your-computer-ip>:5055` on the other device
+(same wifi). Find your IP with `hostname -I` on Linux, `ipconfig` on Windows or
+`ipconfig getifaddr en0` on macOS.
+
+Sign in with the **same name** on both and you are on the same boards. Sign in
+with a different name and you get your own, private, separate history.
+
+### On Windows
+
+The scripts call `python3`, which Windows does not have. Either use WSL, or run
+the two halves in separate terminals:
+
+    python backend\app.py          # terminal 1
+    npm run dev:web                 # terminal 2
+
+### If something does not start
+
+| Symptom | Cause |
+|---|---|
+| `Address already in use` | Something else is on 5055 — run `PORT=5060 npm start` |
+| `ModuleNotFoundError: flask` | `pip3 install -r backend/requirements.txt` was skipped |
+| `vite: not found` | `npm install` was skipped |
+| A red banner naming another service | Another app is on the API port; the banner says which address it tried |
+
+### Ports
+
+GameBoard listens on **5055**, not 8080 — 8080 is commonly taken (a Spring Boot
+app was using it on the machine this was built on), and a dev server left
+proxying `/api` there returns a stranger's 404 that looks like a GameBoard bug.
 
 **The frontend now finds its own backend.** On boot it probes, in order:
 
